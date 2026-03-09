@@ -139,4 +139,3 @@ crossplane-composition-v1/
 ## Documentation
 
 - [Quick Start Guide](docs/quickstart.md)
-- [Technical Documentation](docs/technical-documentation.md)
