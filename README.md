@@ -125,6 +125,8 @@ crossplane-composition-v1/
 ├── config/
 │   ├── environmentconfig.yaml     # Sample EnvironmentConfig
 │   └── providerconfig.yaml        # Sample ProviderConfig
+├── docs/
+│   ├── quickstart.md              # Step-by-step setup guide
 ├── example/
 │   └── ecr-repository-claim.yaml  # Example RepositoryClaim
 ├── package/
