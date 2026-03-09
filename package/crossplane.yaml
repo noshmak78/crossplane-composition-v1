@@ -1,0 +1,24 @@
+apiVersion: meta.pkg.crossplane.io/v1
+kind: Configuration
+metadata:
+  name: arkila-aws
+  annotations:
+    meta.crossplane.io/maintainer: "Arkila Platform Engineering <platform@arkila.com>"
+    meta.crossplane.io/source: "github.com/arkila/crossplane-composition-v1"
+    meta.crossplane.io/license: "Apache-2.0"
+    meta.crossplane.io/description: "Opinionated Crossplane compositions for AWS resources at Arkila."
+    meta.crossplane.io/readme: "Provides RepositoryClaim and other AWS resource abstractions with standardised tagging, environment-driven configuration, and per-tribe ProviderConfig resolution."
+spec:
+  crossplane:
+    version: ">=v1.14.0"
+  dependsOn:
+    - function: xpkg.upbound.io/crossplane-contrib/function-environment-configs
+      version: "v0.4.0"
+    - function: xpkg.upbound.io/upbound/function-patch-and-transform
+      version: "v0.8.2"
+    - function: xpkg.upbound.io/upbound/function-go-templating
+      version: "v0.11.0"
+    - function: xpkg.upbound.io/crossplane-contrib/function-auto-ready
+      version: "v0.5.2"
+    - provider: xpkg.upbound.io/upbound/provider-aws-ecr
+      version: "v1.23.2"

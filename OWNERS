@@ -1,0 +1,8 @@
+approvers:
+  - platform-engineering
+
+reviewers:
+  - platform-engineering
+
+labels:
+  - platform

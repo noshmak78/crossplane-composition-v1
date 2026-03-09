@@ -1,0 +1,20 @@
+apiVersion: aws.arkila.com/v1alpha1
+kind: RepositoryClaim
+metadata:
+  name: functions-test-repository
+  namespace: crossplane-system
+spec:
+  compositionRef:
+    name: ecr-composition
+  deletionPolicy: Delete
+  environmentConfig: de-tags
+  project: crossplane
+  owner: DevSecOPS Platfrorms
+  createdby: Noah Makau
+  squad: DevSecOPS Platfrorms
+  # ECR Values
+  ecrName: functions-test
+  ecrEncryptionType: AES256
+  ecrScanOnPush: false
+  ecrImageTagMutability: IMMUTABLE
+

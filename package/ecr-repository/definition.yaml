@@ -1,0 +1,81 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata: 
+  name: repositories.aws.arkila.com
+spec:
+  group: aws.arkila.com
+  defaultCompositionRef:
+    name: ecr-composition
+  claimNames:
+    kind: RepositoryClaim
+    plural: repositoriesclaims
+  names:
+    kind: Repository
+    plural: repositories
+  versions:
+    - name: v1alpha1 
+      served: true 
+      referenceable: true 
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                deletionPolicy:
+                  type: string
+                  enum:
+                    - Delete
+                    - Orphan
+                  default: Orphan
+                managementPolicies:
+                  type: array
+                  items:
+                    type: string
+                  default: ["*"]
+                #Environment Config variables
+                environmentConfig:
+                  type: string
+                project:
+                  type: string
+                owner:
+                  type: string
+                createdby: 
+                  type: string 
+                squad:
+                  type: string
+                crq:
+                  type: string
+                #ECR Variables
+                ecrName:
+                  type: string
+                ecrEncryptionType:
+                  type: string
+                  enum:
+                    - AES256
+                    - KMS
+                  default: AES256
+                ecrKmsKeyArn:
+                  type: string
+                  description: KMS key ARN for encryption. Required when ecrEncryptionType is KMS.
+                ecrScanOnPush:
+                  type: boolean
+                  default: false
+                ecrImageTagMutability:
+                  type: string
+                  enum:
+                    - IMMUTABLE
+                    - MUTABLE
+                  default: IMMUTABLE
+              required:
+                - ecrName
+            status:
+              type: object
+              properties:
+                ecrArn:
+                  type: string
+                  description: Full ARN of the repository.
+                ecrRepositoryUrl:
+                  type: string
+                  description: The URL of the repository 

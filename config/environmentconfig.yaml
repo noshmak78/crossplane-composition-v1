@@ -1,0 +1,13 @@
+apiVersion: apiextensions.crossplane.io/v1alpha1
+kind: EnvironmentConfig
+metadata:
+  # Name and label must match the value set in spec.environmentConfig of your claim
+  name: bg-dev
+  labels:
+    name: bg-dev
+data:
+  region: eu-west-1
+  environment: dev
+  tribe: bg
+  project: myproject
+  crossplane: "true"

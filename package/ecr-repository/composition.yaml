@@ -1,0 +1,171 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  creationTimestamp: 
+  name: ecr-composition
+spec:
+  compositeTypeRef:
+    apiVersion: aws.arkila.com/v1alpha1
+    kind: Repository
+  writeConnectionSecretsToNamespace: crossplane-system
+  mode: Pipeline
+  pipeline:
+    - step: environmentConfigs
+      functionRef:
+        name: function-environment-configs
+      input:
+        apiVersion: environmentconfigs.fn.crossplane.io/v1beta1
+        kind: Input
+        spec:
+          environmentConfigs:
+            - type: Selector
+              selector:
+                mode: Single
+                matchLabels:
+                  - type: FromCompositeFieldPath
+                    key: name
+                    valueFromFieldPath: spec.environmentConfig
+      
+    - step: patch-and-transform
+      functionRef:
+        name: function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        environment: 
+        kind: Resources
+        patchSets:
+          - name: region
+            patches:
+              - fromFieldPath: region
+                toFieldPath: spec.forProvider.region
+                type: FromEnvironmentFieldPath
+          - name: providerConfigRef
+            patches:
+              - combine:
+                  strategy: string
+                  string:
+                    fmt: '%s-%s'
+                  variables:
+                    - fromFieldPath: tribe
+                    - fromFieldPath: environment
+                toFieldPath: spec.providerConfigRef.name
+                type: CombineFromEnvironment
+          - name: tags
+            patches:
+              - fromFieldPath: spec.createdby
+                toFieldPath: spec.forProvider.tags.CreatedBy
+                type: FromCompositeFieldPath
+              - fromFieldPath: spec.owner
+                toFieldPath: spec.forProvider.tags.Owner
+                type: FromCompositeFieldPath
+              - fromFieldPath: crossplane
+                toFieldPath: spec.forProvider.tags.Crossplane
+                type: FromEnvironmentFieldPath
+              - fromFieldPath: environment
+                toFieldPath: spec.forProvider.tags.Environment
+                transforms:
+                  - map:
+                      dev: Development
+                      prod: Production
+                      sandbox: Sandbox
+                      staging: Staging
+                      uat: UAT
+                    type: map
+                type: FromEnvironmentFieldPath
+              - fromFieldPath: tribe
+                toFieldPath: spec.forProvider.tags.Tribe
+                transforms:
+                  - map:
+                      bg: Base Growth
+                      dmg: Digital marketing and growth
+                      dcp: Digital Channels Payment
+                      ds: Digital Services
+                    type: map
+                type: FromEnvironmentFieldPath
+              - fromFieldPath: spec.project
+                toFieldPath: spec.forProvider.tags.Project
+                type: FromCompositeFieldPath
+              - fromFieldPath: spec.squad
+                toFieldPath: spec.forProvider.tags.Squad
+                type: FromCompositeFieldPath
+              - fromFieldPath: spec.crq
+                toFieldPath: spec.forProvider.tags.CRQ
+                type: FromCompositeFieldPath
+        resources:
+          - name: repository
+            base:
+              apiVersion: ecr.aws.upbound.io/v1beta1
+              kind: Repository
+              metadata:
+                name: ""
+                annotations:
+                  crossplane.io/external-name: ""
+                labels:
+                  type: respository
+              spec:
+                deletionPolicy: ""
+                forProvider:
+                  encryptionConfiguration:
+                    - encryptionType: ""
+                      kmsKey: ""
+                  imageScanningConfiguration:
+                    - scanOnPush: 
+                  imageTagMutability: ""
+                  region: ""
+                  tags:
+                    CreatedBy: ""
+                    Crossplane: ""
+                    Environment: ""
+                    Name: ""
+                    Owner: ""
+                    Project: ""
+                    Squad: ""
+                    Tribe: ""
+                    CRQ: ""
+                providerConfigRef:
+                  name: default
+            patches:
+              - fromFieldPath: spec.deletionPolicy
+                toFieldPath: spec.deletionPolicy
+                type: FromCompositeFieldPath
+              - patchSetName: region
+                type: PatchSet
+              - patchSetName: providerConfigRef
+                type: PatchSet
+              - patchSetName: tags
+                type: PatchSet
+              - combine:
+                  strategy: string
+                  string:
+                    fmt: '%s-repository'
+                  variables:
+                    - fromFieldPath: project
+                toFieldPath: metadata.name
+                type: CombineFromEnvironment
+              - fromFieldPath: spec.ecrName
+                toFieldPath: spec.forProvider.tags.Name
+                type: FromCompositeFieldPath
+              - fromFieldPath: spec.ecrName
+                toFieldPath: metadata.annotations["crossplane.io/external-name"]
+                type: FromCompositeFieldPath
+              - fromFieldPath: spec.ecrEncryptionType
+                toFieldPath: spec.forProvider.encryptionConfiguration[0].encryptionType
+                type: FromCompositeFieldPath
+              - fromFieldPath: spec.ecrKmsKeyArn
+                toFieldPath: spec.forProvider.encryptionConfiguration[0].kmsKey
+                type: FromCompositeFieldPath
+              - fromFieldPath: spec.ecrScanOnPush
+                toFieldPath: spec.forProvider.imageScanningConfiguration[0].scanOnPush
+                type: FromCompositeFieldPath
+              - fromFieldPath: spec.ecrImageTagMutability
+                toFieldPath: spec.forProvider.imageTagMutability
+                type: FromCompositeFieldPath
+              - fromFieldPath: status.atProvider.arn
+                toFieldPath: status.ecrArn
+                type: ToCompositeFieldPath
+              - fromFieldPath: status.atProvider.repositoryUrl
+                toFieldPath: status.ecrRepositoryUrl
+                type: ToCompositeFieldPath
+    - step: automatically-detect-ready-composed-resources
+      functionRef:
+        name: function-auto-ready

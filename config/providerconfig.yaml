@@ -1,0 +1,14 @@
+apiVersion: aws.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  # Name must follow the pattern {tribe}-{environment}
+  # Valid tribes: bg, dmg, dcp, ds
+  # Valid environments: dev, staging, uat, sandbox, prod
+  name: bg-dev
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      namespace: crossplane-system
+      name: aws-creds
+      key: creds
