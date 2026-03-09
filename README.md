@@ -141,3 +141,8 @@ crossplane-composition-v1/
 ## Documentation
 
 - [Quick Start Guide](docs/quickstart.md)
+
+## Author
+
+Noah Makau — DevSecOps Engineer  
+[linkedin.com/in/noah-makau](https://linkedin.com/in/noah-makau) | [topmate.io/noah_makau](https://topmate.io/noah_makau)
